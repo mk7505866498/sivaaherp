@@ -19,7 +19,7 @@ export async function POST() {
 
     const pricingRes =
       await fetch(
-        `http://localhost:3000/api/cost-price/sivaah`,
+        `https://sivaaherp.vercel.app/api/cost-price/sivaah`,
         {
           cache: "no-store",
         }
