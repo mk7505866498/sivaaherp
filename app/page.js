@@ -43,6 +43,13 @@ const modules = [
     href: "/sync-prices",
     icon: "🔄",
   },
+  {
+  title: "Products",
+  desc:
+      "Add,Edit Products",
+  href: "/products",
+   icon: "📊",
+}
 
 ];
 
