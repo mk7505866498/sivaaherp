@@ -54,7 +54,58 @@ export default function ProductsPage() {
 
     fetchProducts();
   }
+async function openCertificate(
+  productId
+) {
 
+  try {
+
+    const res =
+      await fetch(
+
+        "/api/certificates/generate",
+
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body:
+            JSON.stringify({
+
+              productId,
+            }),
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!data.success) {
+
+      throw new Error();
+    }
+
+   window.open(
+
+  `https://www.sivaah.in/verify/${data.slug}`,
+
+  "_blank"
+);
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Error opening certificate"
+    );
+  }
+}
   const filteredProducts =
     useMemo(() => {
 
@@ -228,27 +279,42 @@ export default function ProductsPage() {
 
               </div>
 
-              <div className="flex gap-3 mt-5">
+              <div className="flex flex-col gap-3 mt-5">
 
-                <Link
-                  href={`/products/edit/${product._id}`}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full text-center"
-                >
-                  Edit
-                </Link>
+  <div className="flex gap-3">
 
-                <button
-                  onClick={() =>
-                    deleteProduct(
-                      product._id
-                    )
-                  }
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg w-full"
-                >
-                  Delete
-                </button>
+    <Link
+      href={`/products/edit/${product._id}`}
+      className="bg-blue-500 text-white px-4 py-2 rounded-lg w-full text-center"
+    >
+      Edit
+    </Link>
 
-              </div>
+    <button
+      onClick={() =>
+        deleteProduct(
+          product._id
+        )
+      }
+      className="bg-red-500 text-white px-4 py-2 rounded-lg w-full"
+    >
+      Delete
+    </button>
+
+  </div>
+
+  <button
+  onClick={() =>
+    openCertificate(
+      product._id
+    )
+  }
+  className="bg-black text-white px-4 py-3 rounded-xl"
+>
+  View Certificate
+</button>
+
+</div>
 
             </div>
           )
