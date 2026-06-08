@@ -189,7 +189,37 @@ const uploadImagesToCloudinary =
 
     return uploadedUrls;
 };
+function roundMrp(rawMrp) {
 
+  const pricePoints = [
+
+    999,
+    1499,
+    1999,
+    2499,
+    2999,
+    3499,
+    3999,
+    4999,
+    5999,
+    6999,
+    7999,
+    9999,
+    11999,
+    14999,
+    19999,
+    24999
+
+  ];
+
+  const matched =
+    pricePoints.find(
+      price =>
+        price >= rawMrp
+    );
+
+  return matched || rawMrp;
+}
   async function submitProduct() {
 
     if (
@@ -215,7 +245,16 @@ const uploadImagesToCloudinary =
 
      const imageUrls =
   await uploadImagesToCloudinary();
+const grams =
+  Number(form.grams);
 
+const MRP_SILVER_RATE = 350;
+const MRP_LABOUR_RATE = 350;
+const rawMrp =
+  grams * (MRP_SILVER_RATE  + MRP_LABOUR_RATE);
+
+const mrp =
+  roundMrp(rawMrp);
       const payload = {
 
         name:
@@ -269,6 +308,7 @@ const uploadImagesToCloudinary =
 
         material:
           "925 Silver",
+          mrp:mrp,
 
         seo: {
 

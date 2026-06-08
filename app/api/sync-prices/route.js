@@ -58,15 +58,15 @@ export async function POST() {
       // RANDOM MRP
       // ----------------------------------
 
-      const mrpMultiplier =
-        1.20 +
-        Math.random() * 0.10;
+      // const mrpMultiplier =
+      //   1.20 +
+      //   Math.random() * 0.10;
 
-      const mrp =
-        Math.round(
-          universalSellingPrice *
-          mrpMultiplier
-        );
+      // const mrp =
+      //   Math.round(
+      //     universalSellingPrice *
+      //     mrpMultiplier
+      //   );
 
       // ----------------------------------
       // UPDATE PRODUCT
@@ -88,8 +88,6 @@ export async function POST() {
                 Math.round(
                   universalSellingPrice
                 ),
-
-              mrp,
 
               updatedAt:
                 new Date(),
