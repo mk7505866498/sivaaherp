@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
 const modules = [
 
   {
@@ -54,7 +54,97 @@ const modules = [
 ];
 
 export default function HomePage() {
+const [silverRate, setSilverRate] =
+  useState(0);
 
+const [editing, setEditing] =
+  useState(false);
+
+useEffect(() => {
+
+  fetchSilverRate();
+
+}, []);
+
+async function fetchSilverRate() {
+
+  try {
+
+    const res =
+      await fetch(
+        "/api/metalrates/silver"
+      );
+
+    const data =
+      await res.json();
+
+    if (data.success) {
+
+      setSilverRate(
+        data.ratePerGram
+      );
+    }
+
+  } catch (error) {
+
+    console.log(error);
+  }
+}
+
+async function updateSilverRate() {
+
+  try {
+
+    const res =
+      await fetch(
+        "/api/metalrates/silver",
+        {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+
+              ratePerGram:
+                Number(
+                  silverRate
+                )
+            })
+        }
+      );
+
+    const data =
+      await res.json();
+
+    if (!data.success) {
+
+      throw new Error(
+        "Update Failed"
+      );
+    }
+
+    alert(
+      "Silver Rate Updated Successfully"
+    );
+
+    setEditing(false);
+
+    fetchSilverRate();
+
+  } catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Failed To Update Silver Rate"
+    );
+  }
+}
   return (
 
     <div className="min-h-screen bg-[#0F1115] text-white p-8">
@@ -79,7 +169,93 @@ export default function HomePage() {
           </p>
 
         </div>
+<div className="bg-gradient-to-r from-[#171A21] to-[#1E232D] border border-[#B08D57] rounded-3xl p-8 mb-8">
 
+  <div className="text-sm uppercase tracking-widest text-gray-400 mb-2">
+
+    Current Silver Rate
+
+  </div>
+
+  <div className="flex items-center justify-between">
+
+    <div>
+
+      <h2 className="text-5xl font-bold text-[#D6B98C]">
+
+        ₹{silverRate}
+
+      </h2>
+
+      <p className="text-gray-400 mt-2">
+
+        Per Gram
+
+      </p>
+
+    </div>
+
+    <button
+
+      onClick={() =>
+        setEditing(true)
+      }
+
+      className="bg-[#B08D57] text-black px-5 py-3 rounded-xl font-semibold"
+    >
+
+      Change Rate
+
+    </button>
+
+  </div>
+
+
+</div>
+  {
+  editing && (
+
+    <div className="bg-[#171A21] border border-[#262B36] rounded-3xl p-6 mb-8">
+
+      <h3 className="text-xl font-semibold mb-4">
+        Update Silver Rate
+      </h3>
+
+      <input
+        type="number"
+        value={silverRate}
+       onChange={(e) =>
+  setSilverRate(
+    Number(e.target.value)
+  )
+}
+        className="w-full bg-[#0F1115] border border-[#262B36] rounded-xl p-3 mb-4"
+      />
+
+      <div className="flex gap-3">
+
+        <button
+          onClick={updateSilverRate}
+          className="bg-[#B08D57] text-black px-5 py-3 rounded-xl font-semibold"
+        >
+          Save
+        </button>
+
+        <button
+          onClick={() =>
+            setEditing(false)
+          }
+          className="border border-gray-500 px-5 py-3 rounded-xl"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+
+  )
+}
         {/* GRID */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
