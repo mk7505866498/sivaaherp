@@ -209,27 +209,28 @@ export async function GET(
         // TARGETS
         // -------------------------
 
-        const maxChannelDeduction =
-          20;
+        // const maxChannelDeduction =
+        //   20;
 
-        const targetNetMargin =
-          20;
+        // const targetNetMargin =
+        //   20;
 
         // -------------------------
         // UNIVERSAL SELLING PRICE
         // -------------------------
 
-        const universalSellingPrice =
-          baseCost /
-          (
-            1 -
-            (
-              maxChannelDeduction +
-              targetNetMargin
-            ) /
-              100
-          );
-
+        // const universalSellingPrice =
+        //   baseCost /
+        //   (
+        //     1 -
+        //     (
+        //       maxChannelDeduction +
+        //       targetNetMargin
+        //     ) /
+        //       100
+        //   );
+const universalSellingPrice =
+  product.price;
         // -------------------------
         // CUSTOMER PAYMENT
         // -------------------------
