@@ -26,10 +26,106 @@ export async function POST(req) {
     /* =========================
        CREATE PRODUCT DATA
     ========================= */
+    function generateSkuBase(
+      name,
+      category
+    ) {
 
+      const ignored = [
+        "sivaah",
+        "925",
+        "sterling",
+        "silver"
+      ];
+
+      const categoryCode =
+        category
+          .toUpperCase()
+          .substring(0, 4);
+
+      const words =
+        name
+          .split(/\s+/)
+          .filter(
+            word =>
+              !ignored.includes(
+                word.toLowerCase()
+              )
+          );
+
+      const initials = [];
+
+      for (
+        let i = 0;
+        i < 3;
+        i++
+      ) {
+
+        if (words[i]) {
+
+          initials.push(
+            words[i][0]
+              .toUpperCase()
+          );
+
+        } else {
+
+          initials.push(
+            categoryCode[0]
+          );
+        }
+      }
+
+      return `SIV-${categoryCode}-${initials.join("")}`;
+    }
+    const skuBase =
+      generateSkuBase(
+        body.name,
+        body.category
+      );
+
+ const existingProducts =
+  await db
+    .collection("products")
+    .find({
+      sku_id: {
+        $regex: `^${skuBase}-`
+      }
+    })
+    .toArray();
+
+let maxNumber = 0;
+
+existingProducts.forEach(
+  product => {
+
+    const parts =
+      product.sku_id?.split("-");
+
+    const num =
+      Number(
+        parts?.[
+          parts.length - 1
+        ]
+      );
+
+    if (
+      num > maxNumber
+    ) {
+
+      maxNumber =
+        num;
+    }
+  }
+);
+
+const skuId =
+  `${skuBase}-${maxNumber + 1}`;
     const productData = {
 
       ...body,
+      sku_id:
+    skuId,
 
       material:
         "925 Silver",
@@ -82,11 +178,10 @@ export async function POST(req) {
 
       const certificateSlug =
 
-        `svh-cert-${
-          crypto.randomInt(
-            1000,
-            9999
-          )
+        `svh-cert-${crypto.randomInt(
+          1000,
+          9999
+        )
         }`;
 
       /* =========================

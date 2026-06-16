@@ -263,6 +263,16 @@ async function openCertificate(
                   {product.stock}
 
                 </p>
+                    <p>
+
+                  <span className="font-semibold">
+                    SKu_id:
+                  </span>
+
+                  {" "}
+                  {product.sku_id}
+
+                </p>
 
                 <p className="break-all">
 
