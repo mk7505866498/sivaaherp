@@ -133,77 +133,52 @@ export async function GET(
         // COST VARIABLES
         // -------------------------
 
-        let flatCosts = 0;
+   const packagingCost = 80;
 
-        let sellingPricePercent =
-          0;
+let marketplaceFlatDeduction = 0;
 
-        let discountedPricePercent =
-          0;
 
-        const appliedCosts = [];
+const appliedCosts = [];
+
+      
 
         // -------------------------
         // PROCESS COST CONFIGS
         // -------------------------
 
-        costConfigs.forEach(
-          (cost) => {
+       costConfigs.forEach((cost) => {
 
-            // FLAT COSTS
+  if (cost.type === "flat") {
 
-            if (
-              cost.type === "flat"
-            ) {
+    appliedCosts.push({
+      name: cost.name,
+      amount: cost.value,
+    });
 
-              flatCosts +=
-                cost.value;
+    // Packaging is manufacturing cost
 
-              appliedCosts.push({
-                name: cost.name,
-                amount:
-                  cost.value,
-              });
-            }
+    if (cost.key === "packagingonline") {
 
-            // PERCENT COSTS
+      return;
+    }
 
-            if (
-              cost.type ===
-              "percent"
-            ) {
+    // Every other flat cost is marketplace deduction
 
-              // ON SELLING PRICE
+    marketplaceFlatDeduction +=
+      cost.value;
+  }
 
-              if (
-                cost.calculationOn ===
-                "selling_price"
-              ) {
+ 
 
-                sellingPricePercent +=
-                  cost.value;
-              }
-
-              // ON DISCOUNTED PRICE
-
-              if (
-                cost.calculationOn ===
-                "discounted_price"
-              ) {
-
-                discountedPricePercent +=
-                  cost.value;
-              }
-            }
-          }
-        );
+});
 
         // -------------------------
         // BASE COST
         // -------------------------
 
         const baseCost =
-          rawValue + flatCosts;
+  rawValue + packagingCost;
+  
 
         // -------------------------
         // TARGETS
@@ -234,76 +209,79 @@ const universalSellingPrice =
         // -------------------------
         // CUSTOMER PAYMENT
         // -------------------------
+let customerPays =
+  universalSellingPrice;
+if (channel === "website") {
 
-        const customerPays =
-          universalSellingPrice *
-          (
-            1 -
-            sellingPricePercent /
-              100
-          );
+  const coupon =
+    costConfigs.find(
+      c => c.key === "discount20"
+    );
 
+  if (coupon) {
+
+    customerPays =
+      universalSellingPrice *
+      (1 - coupon.value / 100);
+
+  }
+
+}
         // -------------------------
         // SETTLEMENT
         // -------------------------
 
-        const settlement =
-          customerPays *
-          (
-            1 -
-            discountedPricePercent /
-              100
-          );
+     let totalPercentDeduction = 0;
 
+costConfigs.forEach(cost => {
+
+  if (cost.type !== "percent")
+    return;
+
+  let amount = 0;
+
+  if (
+    cost.calculationOn ===
+    "selling_price"
+  ) {
+
+    amount =
+      universalSellingPrice *
+      cost.value /
+      100;
+
+  }
+
+  if (
+    cost.calculationOn ===
+    "discounted_price"
+  ) {
+
+    amount =
+      customerPays *
+      cost.value /
+      100;
+
+  }
+
+  totalPercentDeduction +=
+    amount;
+
+  appliedCosts.push({
+    name: cost.name,
+    amount,
+  });
+
+});
+
+const settlement =
+  customerPays
+  - marketplaceFlatDeduction
+  - totalPercentDeduction;
         // -------------------------
         // PERCENT COSTS
         // -------------------------
 
-        costConfigs.forEach(
-          (cost) => {
-
-            if (
-              cost.type ===
-              "percent"
-            ) {
-
-              let amount = 0;
-
-              // ON SELLING PRICE
-
-              if (
-                cost.calculationOn ===
-                "selling_price"
-              ) {
-
-                amount =
-                  (
-                    universalSellingPrice *
-                    cost.value
-                  ) / 100;
-              }
-
-              // ON DISCOUNTED PRICE
-
-              if (
-                cost.calculationOn ===
-                "discounted_price"
-              ) {
-
-                amount =
-                  (
-                    customerPays *
-                    cost.value
-                  ) / 100;
-              }
-
-              appliedCosts.push({
-                name: cost.name,
-                amount,
-              });
-            }
-          }
-        );
 
         // -------------------------
         // NET PROFIT
@@ -334,7 +312,6 @@ const universalSellingPrice =
 
           rawValue,
 
-          flatCosts,
 
           baseCost,
 
@@ -349,10 +326,6 @@ const universalSellingPrice =
           netProfit,
 
           netMargin,
-
-          sellingPricePercent,
-
-          discountedPricePercent,
         };
       });
 
