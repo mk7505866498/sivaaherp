@@ -130,199 +130,151 @@ export async function GET(
           );
 
         // -------------------------
-        // COST VARIABLES
-        // -------------------------
+       // -------------------------
+// COST VARIABLES
+// -------------------------
 
-        let flatCosts = 0;
+let flatCosts = 0;
 
-        let sellingPricePercent =
-          0;
+let sellingPricePercent = 0;
 
-        let discountedPricePercent =
-          0;
+let discountedPricePercent = 0;
 
-        const appliedCosts = [];
+let totalPercentCost = 0;
 
-        // -------------------------
-        // PROCESS COST CONFIGS
-        // -------------------------
+const appliedCosts = [];
 
-        costConfigs.forEach(
-          (cost) => {
+// -------------------------
+// PROCESS COST CONFIGS
+// -------------------------
 
-            // FLAT COSTS
+costConfigs.forEach((cost) => {
 
-            if (
-              cost.type === "flat"
-            ) {
+  if (cost.type === "flat") {
 
-              flatCosts +=
-                cost.value;
+    flatCosts += cost.value;
 
-              appliedCosts.push({
-                name: cost.name,
-                amount:
-                  cost.value,
-              });
-            }
+    appliedCosts.push({
+      name: cost.name,
+      amount: cost.value,
+    });
 
-            // PERCENT COSTS
+  }
 
-            if (
-              cost.type ===
-              "percent"
-            ) {
+  if (cost.type === "percent") {
 
-              // ON SELLING PRICE
+    if (
+      cost.calculationOn ===
+      "selling_price"
+    ) {
 
-              if (
-                cost.calculationOn ===
-                "selling_price"
-              ) {
+      sellingPricePercent +=
+        cost.value;
+    }
 
-                sellingPricePercent +=
-                  cost.value;
-              }
+    if (
+      cost.calculationOn ===
+      "discounted_price"
+    ) {
 
-              // ON DISCOUNTED PRICE
+      discountedPricePercent +=
+        cost.value;
+    }
+  }
 
-              if (
-                cost.calculationOn ===
-                "discounted_price"
-              ) {
+});
 
-                discountedPricePercent +=
-                  cost.value;
-              }
-            }
-          }
-        );
+// -------------------------
+// BASE COST
+// -------------------------
 
-        // -------------------------
-        // BASE COST
-        // -------------------------
+const baseCost =
+  rawValue + flatCosts;
 
-        const baseCost =
-          rawValue + flatCosts;
+// -------------------------
+// UNIVERSAL SELLING PRICE
+// -------------------------
 
-        // -------------------------
-        // TARGETS
-        // -------------------------
-
-        // const maxChannelDeduction =
-        //   20;
-
-        // const targetNetMargin =
-        //   20;
-
-        // -------------------------
-        // UNIVERSAL SELLING PRICE
-        // -------------------------
-
-        // const universalSellingPrice =
-        //   baseCost /
-        //   (
-        //     1 -
-        //     (
-        //       maxChannelDeduction +
-        //       targetNetMargin
-        //     ) /
-        //       100
-        //   );
 const universalSellingPrice =
   product.price;
-        // -------------------------
-        // CUSTOMER PAYMENT
-        // -------------------------
 
-        const customerPays =
-          universalSellingPrice *
-          (
-            1 -
-            sellingPricePercent /
-              100
-          );
+// -------------------------
+// CUSTOMER PAYS
+// -------------------------
 
-        // -------------------------
-        // SETTLEMENT
-        // -------------------------
+const customerPays =
+  universalSellingPrice;
 
-        const settlement =
-          customerPays *
-          (
-            1 -
-            discountedPricePercent /
-              100
-          );
+// -------------------------
+// CALCULATE PERCENT COSTS
+// -------------------------
 
-        // -------------------------
-        // PERCENT COSTS
-        // -------------------------
+costConfigs.forEach((cost) => {
 
-        costConfigs.forEach(
-          (cost) => {
+  if (cost.type !== "percent")
+    return;
 
-            if (
-              cost.type ===
-              "percent"
-            ) {
+  let amount = 0;
 
-              let amount = 0;
+  if (
+    cost.calculationOn ===
+    "selling_price"
+  ) {
 
-              // ON SELLING PRICE
+    amount =
+      (
+        universalSellingPrice *
+        cost.value
+      ) / 100;
+  }
 
-              if (
-                cost.calculationOn ===
-                "selling_price"
-              ) {
+  if (
+    cost.calculationOn ===
+    "discounted_price"
+  ) {
 
-                amount =
-                  (
-                    universalSellingPrice *
-                    cost.value
-                  ) / 100;
-              }
+    amount =
+      (
+        customerPays *
+        cost.value
+      ) / 100;
+  }
 
-              // ON DISCOUNTED PRICE
+  totalPercentCost += amount;
 
-              if (
-                cost.calculationOn ===
-                "discounted_price"
-              ) {
+  appliedCosts.push({
+    name: cost.name,
+    amount,
+  });
 
-                amount =
-                  (
-                    customerPays *
-                    cost.value
-                  ) / 100;
-              }
+});
 
-              appliedCosts.push({
-                name: cost.name,
-                amount,
-              });
-            }
-          }
-        );
+// -------------------------
+// SETTLEMENT
+// -------------------------
 
-        // -------------------------
-        // NET PROFIT
-        // -------------------------
+const settlement =
+  customerPays -
+  totalPercentCost;
 
-        const netProfit =
-          settlement -
-          baseCost;
+// -------------------------
+// NET PROFIT
+// -------------------------
 
-        // -------------------------
-        // NET MARGIN
-        // -------------------------
+const netProfit =
+  settlement -
+  baseCost;
 
-        const netMargin =
-          (
-            (netProfit /
-              universalSellingPrice) *
-            100
-          ).toFixed(2);
+// -------------------------
+// NET MARGIN
+// -------------------------
+
+const netMargin =
+  (
+    (netProfit /
+      universalSellingPrice) *
+    100
+  ).toFixed(2);
 
         return {
 

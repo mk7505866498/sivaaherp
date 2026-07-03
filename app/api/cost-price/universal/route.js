@@ -64,7 +64,7 @@ export async function GET() {
           packaging;
 
         const worstMarketplaceDeduction =
-          20;
+          30;
 
         const targetMargin =
           20;
