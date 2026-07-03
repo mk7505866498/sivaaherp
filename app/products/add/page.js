@@ -248,8 +248,8 @@ function roundMrp(rawMrp) {
 const grams =
   Number(form.grams);
 
-const MRP_SILVER_RATE = 350;
-const MRP_LABOUR_RATE = 350;
+const MRP_SILVER_RATE = 500;
+const MRP_LABOUR_RATE = 500;
 const rawMrp =
   grams * (MRP_SILVER_RATE  + MRP_LABOUR_RATE);
 
