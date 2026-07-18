@@ -57,22 +57,13 @@ export default function Registration({
       );
     }
 
-    setError("");
-    const response = await fetch("/api/register", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(form),
-});
+   setError("");
 
-const data = await response.json();
-
-if (!response.ok) {
-  return setError(data.message);
+try {
+  await onSubmit(form);
+} catch (err) {
+  setError(err.message || "Something went wrong.");
 }
-
-onSubmit(data);
   
   };
 

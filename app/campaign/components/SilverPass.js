@@ -7,11 +7,12 @@ const BG_IMAGE =
     "https://res.cloudinary.com/df67hp5yk/image/upload/v1784358305/ChatGPT_Image_Jul_18_2026_12_30_28_PM_donb5y.png";
 
 export default function SilverPass({
+    loading,
     user,
     reward,
     registrationCode,
 }) {
-    const [loading, setLoading] = useState(true);
+    
 
     const loadingMessages = [
         "Searching Tonight's Rewards...",
@@ -26,17 +27,15 @@ export default function SilverPass({
         const m1 = setTimeout(() => setMessageIndex(1), 700);
         const m2 = setTimeout(() => setMessageIndex(2), 1400);
 
-        const finish = setTimeout(() => {
-            setLoading(false);
-        }, 2200);
+       
 
         return () => {
             clearTimeout(m1);
             clearTimeout(m2);
-            clearTimeout(finish);
+            
         };
     }, []);
-    const isSivaah = reward.brand === "SIVAAH";
+    const isSivaah = reward?.brand === "SIVAAH";
 
  const rewardBg = isSivaah
   ? "rgba(255,250,242,0.94)"
