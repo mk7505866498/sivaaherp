@@ -12,7 +12,7 @@ export default function SilverPass({
     reward,
     registrationCode,
 }) {
-    
+
 
     const loadingMessages = [
         "Searching Tonight's Rewards...",
@@ -27,23 +27,44 @@ export default function SilverPass({
         const m1 = setTimeout(() => setMessageIndex(1), 700);
         const m2 = setTimeout(() => setMessageIndex(2), 1400);
 
-       
+
 
         return () => {
             clearTimeout(m1);
             clearTimeout(m2);
-            
+
         };
     }, []);
     const isSivaah = reward?.brand === "SIVAAH";
 
- const rewardBg = isSivaah
-  ? "rgba(255,250,242,0.94)"
-  : "rgba(255,245,245,0.94)";
+    const rewardBg = isSivaah
+        ? "rgba(255,250,242,0.94)"
+        : "rgba(255,245,245,0.94)";
 
-   const rewardText = isSivaah
-  ? "#7A5A22"
-  : "#8B1E1E";
+    const rewardText = isSivaah
+        ? "#7A5A22"
+        : "#8B1E1E";
+
+    const handleClaim = () => {
+        const text = `Hi Sivaah! 👋
+
+I've completed my Silver Dining Festival Registration.
+
+Registration ID:
+#${registrationCode}
+
+Name:
+${user?.name}
+
+Reward: ${reward?.title}
+
+Please save my reward.`;
+
+        window.open(
+            `https://wa.me/918090565000?text=${encodeURIComponent(text)}`,
+            "_blank"
+        );
+    };
     return (
         <motion.section
             className="fixed inset-0 overflow-y-auto overflow-x-hidden"
@@ -190,7 +211,7 @@ export default function SilverPass({
                             </p>
 
                             <h2 className="mt-2 text-4xl font-black text-white">
-                                You Unlocked
+                                Your Reward is Ready
                             </h2>
 
                         </div>
@@ -277,7 +298,7 @@ export default function SilverPass({
                                         opacity: .75,
                                     }}
                                 >
-                                    Exclusive Silver Pass Reward
+                                    Redeem this reward at <a href="www.sivaah.in" className="font-semibold text-[#5C4218] underline">sivaah.in</a> before 31st August 2026
                                 </p>
 
                             </div>
@@ -305,7 +326,7 @@ export default function SilverPass({
                                 <div>
 
                                     <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-                                        Silver Pass
+                                        Registration ID
                                     </p>
 
                                     <h3 className="mt-1 text-2xl font-bold text-white">
@@ -338,19 +359,38 @@ export default function SilverPass({
 
                         {/* Instruction */}
 
-                        <p className="mt-1 text-center text-sm leading-6 text-white/80">
-                            Show this screen to our staff
-                            to claim your reward and collect
-                            your Silver Pass.
-                        </p>
+                  <div className="mt-4 rounded-2xl border border-yellow-400/30 bg-yellow-400/15 p-4">
+  <div className="flex items-start gap-3">
+    <span className="text-xl">📍</span>
 
+    <div>
+      <p className="font-semibold text-yellow-100">
+        What's Next?
+      </p>
+
+      <div className="mt-2 space-y-2 text-sm leading-6 text-yellow-50/90">
+        <p>✅ Show this screen to the Kanak Staff.</p>
+
+        <p>🎟️ Collect your Lucky Draw Coupon <span className="text-yellow-200">(on bills of ₹1,499+)</span>.</p>
+
+        <p>📸 Take a screenshot before leaving this page.</p>
+
+        <p>🛍️ Redeem your reward later at <span className="font-semibold text-yellow-100">Sivaah.in</span>.</p>
+      </div>
+    </div>
+  </div>
+</div>
                         {/* CTA */}
-
+                        <p className="mt-3 text-center text-sm text-white/75">
+                            ✅ Save your Registration ID safely. You'll need it to claim your reward.
+                        </p>
                         <button
+                            onClick={handleClaim}
                             className="mt-3 w-full rounded-full bg-white py-3 text-lg font-bold text-black transition hover:scale-[1.02] active:scale-[0.98]"
                         >
-                            Claim at Counter
+                            Save Registration on WhatsApp
                         </button>
+
 
                     </motion.div>
 
