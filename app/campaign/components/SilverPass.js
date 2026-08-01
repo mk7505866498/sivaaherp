@@ -57,6 +57,7 @@ Name:
 ${user?.name}
 
 Reward: ${reward?.title}
+ ${reward?.subtitle}
 
 Please save my reward.`;
 
