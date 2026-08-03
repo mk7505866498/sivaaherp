@@ -171,3 +171,66 @@ export async function POST(request) {
     );
   }
 }
+export async function GET() {
+  try {
+    await connectDB();
+
+    const db = mongoose.connection.db;
+
+ const registrations = (
+  await db
+    .collection("campaignregistrations")
+    .find({})
+    .sort({ createdAt: -1 })
+    .toArray()
+).map((r) => ({
+  ...r,
+  _id: r._id.toString(),
+}));
+
+    // Dashboard Stats
+    const totalRegistrations = registrations.length;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayRegistrations = registrations.filter(
+      (r) => new Date(r.createdAt) >= today
+    ).length;
+
+    const sivaahRewards = registrations.filter(
+      (r) => r.reward?.brand === "SIVAAH"
+    ).length;
+
+    const kanakRewards = registrations.filter(
+      (r) => r.reward?.brand === "KANAK"
+    ).length;
+
+    return NextResponse.json({
+  success: true,
+
+  count: registrations.length,
+
+  stats: {
+    totalRegistrations,
+    todayRegistrations,
+    sivaahRewards,
+    kanakRewards,
+  },
+
+  registrations,
+});
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch registrations.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
