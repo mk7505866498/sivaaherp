@@ -3,13 +3,20 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 const modules = [
-
   {
     title: "Sourcing",
     desc:
       "Manage sourcing batches, vendors & inventory inflow.",
     href: "/sourcing",
     icon: "📦",
+  },
+
+  {
+    title: "Products",
+    desc:
+      "Add, edit products and manage product inventory.",
+    href: "/products",
+    icon: "💎",
   },
 
   {
@@ -37,20 +44,20 @@ const modules = [
   },
 
   {
+    title: "Sales & Profit Dashboard",
+    desc:
+      "Record sales, manage stock and analyze revenue & profit.",
+    href: "/sales",
+    icon: "📈",
+  },
+
+  {
     title: "Sync Live Prices",
     desc:
       "Push updated Selling Price & MRP to main website.",
     href: "/sync-prices",
     icon: "🔄",
   },
-  {
-  title: "Products",
-  desc:
-      "Add,Edit Products",
-  href: "/products",
-   icon: "📊",
-}
-
 ];
 
 export default function HomePage() {
